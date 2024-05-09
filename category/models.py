@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
 
 # Create your models here.
 
@@ -13,6 +14,13 @@ class Category(models.Model):
     description = models.TextField(max_length = 255, blank = True)
     category_image = models.ImageField(upload_to='photos/categories',blank=True)
 
+    def save(self, *args, **kwargs):
+        # Generate slug from category_name 
+        self.slug = slugify(self.category_name)
+        
+        # Call the save method of the parent class
+        super(Category, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
@@ -21,4 +29,4 @@ class Category(models.Model):
         return reverse('products_by_category', args=[self.slug])
 
     def __str__(self):
-        return self.category_name   
+        return self.category_name
